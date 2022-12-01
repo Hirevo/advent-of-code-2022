@@ -4,21 +4,21 @@ Advent of Code 2022
 These are my solutions for the 2022 edition of the [**Advent of Code**](https://adventofcode.com).  
 The solutions are all implemented using both [**Rust**](https://rust-lang.org) and [**SOM (Simple Object Machine)**](https://som-st.github.io).  
 
+The directory layout and code organization methods are quite similar to [my last year's AoC (2021) repository](https://github.com/Hirevo/advent-of-code-2021).  
+
 How to run
 ----------
 
 Here is how you can run each of the [Rust](https://rust-lang.org) solutions:
 
 ```bash
-# NOTE: You can add the '--release' flag to `cargo` in these commands to build with optimizations enabled.
-
 # This will run the solution for day 1.
-cargo run -- 1
+cargo run --release -- 1
 
 # This will run the solution for day 2.
-cargo run -- 2
+cargo run --release -- 2
 
-# And so on, up to day 24 ...
+# And so on, up to day 25...
 ```
 
 Here is how you can run each of the SOM solutions using [SOM-java](https://github.com/SOM-st/som-java) or [SOM-rs](https://github.com/Hirevo/som-rs):
