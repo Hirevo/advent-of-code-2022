@@ -1,0 +1,66 @@
+
+Debug = (
+    ---------
+
+    integer: integer = (
+        integer print.
+    )
+
+    double: double = (
+        double print.
+    )
+
+    string: string = (
+        '\'' print.
+        string print.
+        '\'' print.
+    )
+
+    symbol: symbol = (
+        symbol print.
+    )
+
+    array: array = (
+        '#(' print.
+        array doIndexes: [ :idx |
+            (idx > 1) ifTrue: [ ' ' print ].
+            self any: (array at: idx).
+        ].
+        ')' print.
+    )
+
+    nil = (
+        nil print.
+    )
+
+    set: set = (
+        self array: (set collect: [ :it | it ]) asArray.
+    )
+
+    vector: vector = (
+        | first |
+        '#(' print.
+        vector do: [ :value |
+            first ifNil: [ first := false ] ifNotNil: [ ' ' print ].
+            self any: value.
+        ].
+        ')' print.
+    )
+
+    any: value = (
+        value class = Integer ifTrue: [ ^ self integer: value ].
+        value class = Double ifTrue: [ ^ self double: value ].
+        value class = String ifTrue: [ ^ self string: value ].
+        value class = Symbol ifTrue: [ ^ self symbol: value ].
+        value class = Array ifTrue: [ ^ self array: value ].
+        value class = Set ifTrue: [ ^ self set: value ].
+        value class = Vector ifTrue: [ ^ self vector: value ].
+        value class = Nil ifTrue: [ ^ self nil ].
+        value print.
+    )
+
+    anyLn: value = (
+        self any: value.
+        '' println.
+    )
+)

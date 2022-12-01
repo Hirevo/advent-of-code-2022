@@ -1,0 +1,48 @@
+
+Day01 = (
+    | input |
+
+    setup = (
+        input := system loadFile: 'inputs/day01.txt'.
+        input ifNil: [ self error: 'could not open input file' ].
+
+        input := input split: '\n\n'.
+        input := input reject: [ :it | it length = 0 ].
+        input := input asArray.
+
+        input := input collect: [ :section |
+            | lines |
+
+            lines := section split: '\n'.
+            lines := lines reject: [ :it | it length = 0 ].
+            lines := lines asArray.
+
+            lines collect: [ :it | it asInteger ].
+        ].
+    )
+
+    part1 = (
+        | answer |
+
+        answer := input inject: 0 into: [ :acc :it | acc max: it sum ].
+
+        'part1: ' print. answer println.
+    )
+
+    part2 = (
+        | answer |
+
+        answer := input collect: [ :it | it sum ].
+        Sorter quicksort: answer.
+        answer := answer copyFrom: answer length - 2.
+        answer := answer sum.
+
+        'part2: ' print. answer println.
+    )
+
+    run: args = (
+        self setup.
+        Timing measure: [ self part1 ].
+        Timing measure: [ self part2 ].
+    )
+)
