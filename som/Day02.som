@@ -1,0 +1,93 @@
+
+Day02 = (
+    | input |
+
+    setup = (
+        input := system loadFile: 'inputs/day02.txt'.
+        input ifNil: [ self error: 'could not open input file' ].
+
+        input := input split: '\n'.
+        input := input reject: [ :it | it length = 0 ].
+        input := input asArray.
+
+        input := input collect: [ :section |
+            | lines |
+
+            lines := section split: ' '.
+            lines := lines reject: [ :it | it length = 0 ].
+            lines := lines asArray.
+
+            lines collect: [ :it | it asSymbol ].
+        ].
+    )
+
+    " evaluates the score of a given move against an opposing move "
+    evaluate: move against: opponent = (
+        | score |
+
+        move := #(#X #Y #Z) indexOf: move.
+        opponent := #(#A #B #C) indexOf: opponent.
+
+        score := move - opponent % 3.
+
+        score = 0 ifTrue: [ ^ 3 + move ].
+        score = 1 ifTrue: [ ^ 6 + move ].
+
+        ^ move.
+    )
+
+    " computes the score of the move needed to match the desired outcome against a given opposing move "
+    choose: outcome against: opponent = (
+        | move |
+
+        outcome := #(#Y #Z #X) indexOf: outcome.
+        opponent := #(#A #B #C) indexOf: opponent.
+
+        move := (opponent - 1 + outcome - 1) % 3 + 1.
+
+        outcome = 1 ifTrue: [ ^ 3 + move ].
+        outcome = 2 ifTrue: [ ^ 6 + move ].
+
+        ^ move.
+    )
+
+    part1 = (
+        | answer |
+
+        answer := input inject: 0 into: [ :acc :it |
+            | opponent move score |
+
+            move := it at: 2.
+            opponent := it at: 1.
+
+            score := self evaluate: move against: opponent.
+
+            acc + score.
+        ].
+
+        'part1: ' print. answer println.
+    )
+
+    part2 = (
+        | answer |
+
+        answer := input inject: 0 into: [ :acc :it |
+            | opponent outcome score |
+
+            outcome := it at: 2.
+            opponent := it at: 1.
+
+            score := self choose: outcome against: opponent.
+
+            acc + score.
+        ].
+
+        'part2: ' print. answer println.
+    )
+
+    run: args = (
+        self setup.
+        Timing measure: [ self part1 ].
+        Timing measure: [ self part2 ].
+    )
+)
