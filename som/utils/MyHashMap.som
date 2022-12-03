@@ -195,7 +195,34 @@ MyHashMap = (
         ]
     )
 
-    " TODO: implement `MyHashMap>>#retain:` "
+    " retains only the elements specified by the predicate "
+    retain: blk = (
+        | head |
+        1 to: table length do: [ :idx |
+            | keep |
+            head := table at: idx.
+            [ head notNil ] whileTrue: [
+                (blk value: head) ifTrue: [
+                    | next |
+                    next := head next.
+                    keep := head next: keep.
+                    head := next.
+                ] ifFalse: [
+                    head := head next.
+                ].
+            ].
+            table at: idx put: keep.
+        ]
+    )
+
+    " returns a new seperate map with all the same elements as the current map "
+    clone = (
+        | other |
+        other := self class new: size.
+        self do: [ :it | other at: it key put: it value ].
+        ^ other.
+    )
+
     " TODO: implement `MyHashMap>>#shrinkToFit:` "
 
     " TODO: implement `MyHashMap>>#print` "
