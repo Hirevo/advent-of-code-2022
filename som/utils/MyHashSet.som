@@ -196,17 +196,6 @@ MyHashSet = (
         ^ other.
     )
 
-    asArray = (
-        | array idx |
-        idx := 1.
-        array := Array new: size.
-        self do: [ :it |
-            array at: idx put: it.
-            idx := idx + 1.
-        ].
-        ^ array.
-    )
-
     " TODO: implement `MyHashSet>>#shrinkToFit:` "
 
     " TODO: implement `MyHashSet>>#print` "
