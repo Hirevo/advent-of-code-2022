@@ -1,0 +1,96 @@
+
+Day03 = (
+    | input items |
+
+    setup = (
+        input := system loadFile: 'inputs/day03.txt'.
+        input ifNil: [ self error: 'could not open input file' ].
+
+        input := input split: '\n'.
+        input := input reject: [ :it | it length = 0 ].
+        input := input asArray.
+
+        input := input collect: [ :line |
+            | array |
+            array := Array new: line length.
+            1 to: line length do: [ :idx |
+                array at: idx put: (line charAt: idx) asSymbol.
+            ].
+            array.
+        ].
+
+        " As far as my knowledge goes, we actually have no algorithmic way of generating such an array in SOM, "
+        " so here it is in its literal form "
+        " (the ability to convert a digit to an ASCII character would solve this) "
+        items := #(
+            #a #b #c #d #e #f #g #h #i #j #k #l #m #n #o #p #q #r #s #t #u #v #w #x #y #z
+            #A #B #C #D #E #F #G #H #I #J #K #L #M #N #O #P #Q #R #S #T #U #V #W #X #Y #Z
+        ).
+    )
+
+    part1 = (
+        | answer |
+
+        answer := input inject: 0 into: [ :acc :line |
+            | half set1 set2 value |
+
+            half := line length / 2.
+
+            set1 := MyHashSet new.
+            set2 := MyHashSet new.
+
+            1 to: half do: [ :idx |
+                set1 insert: (line at: idx).
+            ].
+
+            half + 1 to: line length do: [ :idx |
+                set2 insert: (line at: idx).
+            ].
+
+            value := set1 intersection: set2.
+            value := value keys at: 1.
+            value := items indexOf: value.
+
+            acc + value.
+        ].
+
+        'part1: ' print. answer println.
+    )
+
+    part2 = (
+        | answer |
+
+        answer := 0.
+        0 to: input length / 3 - 1 do: [ :idx |
+            | set1 set2 set3 value |
+
+            idx := idx * 3.
+
+            set1 := MyHashSet new.
+            set2 := MyHashSet new.
+
+            (input at: idx + 1) do: [ :it | set1 insert: it ].
+            (input at: idx + 2) do: [ :it | set2 insert: it ].
+
+            set1 := set1 intersection: set2.
+
+            set2 clear.
+            (input at: idx + 3) do: [ :it | set2 insert: it ].
+
+            set1 := set1 intersection: set2.
+
+            value := set1 keys at: 1.
+            value := items indexOf: value.
+
+            answer := answer + value.
+        ].
+
+        'part2: ' print. answer println.
+    )
+
+    run: args = (
+        self setup.
+        Timing measure: [ self part1 ].
+        Timing measure: [ self part2 ].
+    )
+)
