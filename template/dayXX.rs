@@ -12,7 +12,7 @@ fn part1(_input: &InputType) -> Result<(), Error> {
 }
 
 fn part2(_input: &InputType) -> Result<(), Error> {
-    todo!();
+    todo!()
 }
 
 pub fn run() -> Result<(), Error> {
