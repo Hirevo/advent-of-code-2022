@@ -1,0 +1,71 @@
+
+Day04 = (
+    | input |
+
+    setup = (
+        input := system loadFile: 'inputs/day04.txt'.
+        input ifNil: [ self error: 'could not open input file' ].
+
+        input := input split: '\n'.
+        input := input reject: [ :it | it length = 0 ].
+        input := input asArray.
+
+        input := input collect: [ :line |
+            line := line split: ','.
+            line collect: [ :part |
+                part := part split: '-'.
+                Vector2
+                    x: (part at: 1) asInteger
+                    y: (part at: 2) asInteger
+            ].
+        ].
+    )
+
+    part1 = (
+        | answer |
+
+        answer := input inject: 0 into: [ :acc :pair |
+            | lhs rhs min max intersection |
+
+            lhs := pair at: 1.
+            rhs := pair at: 2.
+
+            min := lhs x max: rhs x.
+            max := lhs y min: rhs y.
+
+            intersection := Vector2 x: min y: max.
+
+            (intersection = lhs) || (intersection = rhs)
+                ifTrue: [ acc + 1 ]
+                ifFalse: acc.
+        ].
+
+        'part1: ' print. answer println.
+    )
+
+    part2 = (
+        | answer |
+
+        answer := input inject: 0 into: [ :acc :pair |
+            | lhs rhs min max |
+
+            lhs := pair at: 1.
+            rhs := pair at: 2.
+
+            min := lhs x max: rhs x.
+            max := lhs y min: rhs y.
+
+            max >= min
+                ifTrue: [ acc + 1 ]
+                ifFalse: acc.
+        ].
+
+        'part2: ' print. answer println.
+    )
+
+    run: args = (
+        self setup.
+        Timing measure: [ self part1 ].
+        Timing measure: [ self part2 ].
+    )
+)

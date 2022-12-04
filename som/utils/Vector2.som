@@ -1,0 +1,53 @@
+
+Vector2 = (
+    | x y |
+
+    x = ( ^ x )
+    y = ( ^ y )
+
+    x: newX = ( x := newX )
+    y: newY = ( y := newY )
+
+    = other = (
+        ^ x = other x and: [ y = other y ].
+    )
+
+    + other = (
+        ^ self class
+            x: x + other x
+            y: y + other y
+    )
+
+    - other = (
+        ^ self class
+            x: x - other x
+            y: y - other y
+    )
+
+    hashcode = (
+        ^ 524287 * x hashcode + y hashcode
+    )
+
+    clone = (
+        ^ self class x: x y: y.
+    )
+
+    print = (
+        ('(' + x + ',' + y + ')') print.
+    )
+
+    println = (
+        self print.
+        '' println.
+    )
+
+    -----------
+
+    x: x y: y = (
+        | point |
+        point := self new.
+        point x: x.
+        point y: y.
+        ^ point.
+    )
+)
