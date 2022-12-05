@@ -1,0 +1,113 @@
+
+Day05 = (
+    | stacks instructions |
+
+    setup = (
+        | input count |
+
+        input := system loadFile: 'inputs/day05.txt'.
+        input ifNil: [ self error: 'could not open input file' ].
+
+        input := input split: '\n\n'.
+        input := input reject: [ :it | it length = 0 ].
+        input := input asArray.
+
+        instructions := input at: 2.
+        input := input at: 1.
+
+        input := input split: '\n'.
+        input := input reject: [ :it | it length = 0 ].
+        input := input asArray.
+
+        count := input inject: 0 into: [ :acc :it | acc max: it length ].
+        count := count - 3 / 4 + 1.
+
+        stacks := Array new: count withAll: [ Vector new ].
+
+        input length - 1 downTo: 1 do: [ :line |
+            line := input at: line.
+            1 to: count do: [ :idx |
+                | var |
+                var := idx - 1 * 4 + 2.
+                var > line length ifFalse: [
+                    var := line charAt: var.
+                    var = ' ' ifFalse: [
+                        (stacks at: idx) append: var asSymbol.
+                    ].
+                ].
+            ].
+        ].
+
+        instructions := instructions split: '\n'.
+        instructions := instructions reject: [ :it | it length = 0 ].
+        instructions := instructions asArray.
+
+        instructions := instructions collect: [ :line |
+            line := line split: ' '.
+            Array
+                with: (line at: 2) asInteger
+                with: (line at: 4) asInteger
+                with: (line at: 6) asInteger
+        ].
+    )
+
+    part1 = (
+        | answer |
+
+        answer := stacks collect: [ :stack |
+            (Vector new: stack size) appendAll: stack.
+        ].
+
+        instructions do: [ :instr |
+            | count from to |
+
+            count := instr at: 1.
+            from := instr at: 2.
+            to := instr at: 3.
+
+            1 to: count do: [ :it |
+                (answer at: to) append: (answer at: from) remove.
+            ].
+        ].
+
+        answer := answer inject: '' into: [ :acc :stack | acc + stack remove ].
+
+        'part1: ' print. answer println.
+    )
+
+    part2 = (
+        | answer cache |
+
+        answer := stacks collect: [ :stack |
+            (Vector new: stack size) appendAll: stack.
+        ].
+
+        cache := Vector new.
+
+        instructions do: [ :instr |
+            | count from to |
+
+            count := instr at: 1.
+            from := instr at: 2.
+            to := instr at: 3.
+
+            1 to: count do: [ :it |
+                cache append: (answer at: from) remove.
+            ].
+
+            1 to: count do: [ :it |
+                (answer at: to) append: cache remove.
+            ].
+        ].
+
+        answer := answer inject: '' into: [ :acc :stack | acc + stack remove ].
+
+        'part2: ' print. answer println.
+    )
+
+    run: args = (
+        self setup.
+        Timing measure: [ self part1 ].
+        Timing measure: [ self part2 ].
+    )
+)
