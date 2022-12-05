@@ -41,6 +41,7 @@ fn part2(stacks: &StacksType, instructions: &InstrsType) -> Result<(), Error> {
             .len()
             .checked_sub(instr.count)
             .unwrap_or_default();
+
         cache.extend(stacks[instr.from].drain(idx..));
         stacks[instr.to].extend(cache.drain(..));
 
