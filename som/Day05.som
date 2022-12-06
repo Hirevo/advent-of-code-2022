@@ -65,7 +65,7 @@ Day05 = (
             from := instr at: 2.
             to := instr at: 3.
 
-            1 to: count do: [ :it |
+            count timesRepeat: [
                 (answer at: to) append: (answer at: from) remove.
             ].
         ].
@@ -91,11 +91,11 @@ Day05 = (
             from := instr at: 2.
             to := instr at: 3.
 
-            1 to: count do: [ :it |
+            count timesRepeat: [
                 cache append: (answer at: from) remove.
             ].
 
-            1 to: count do: [ :it |
+            count timesRepeat: [
                 (answer at: to) append: cache remove.
             ].
         ].
