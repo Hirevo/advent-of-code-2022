@@ -1,0 +1,56 @@
+
+Day06 = (
+    | input |
+
+    setup = (
+        | array |
+
+        input := system loadFile: 'inputs/day06.txt'.
+        input ifNil: [ self error: 'could not open input file' ].
+
+        input := input split: '\n'.
+        input := input at: 1.
+
+        array := Array new: input length.
+        1 to: input length do: [ :idx |
+            array at: idx put: (input charAt: idx) asSymbol.
+        ].
+
+        input := array.
+    )
+
+    findMarker: windowSize = (
+        1 to: input length do: [ :idx |
+            | set |
+
+            set := MyHashSet new.
+            idx to: idx + windowSize - 1 do: [ :idx |
+                set insert: (input at: idx).
+            ].
+
+            set size == windowSize ifTrue: [ ^ idx + windowSize - 1 ].
+        ].
+    )
+
+    part1 = (
+        | answer |
+
+        answer := self findMarker: 4.
+
+        'part1: ' print. answer println.
+    )
+
+    part2 = (
+        | answer |
+
+        answer := self findMarker: 14.
+
+        'part1: ' print. answer println.
+    )
+
+    run: args = (
+        self setup.
+        Timing measure: [ self part1 ].
+        Timing measure: [ self part2 ].
+    )
+)
