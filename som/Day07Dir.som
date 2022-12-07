@@ -1,0 +1,46 @@
+
+Day07Dir = (
+    | name parent files size |
+
+    name = ( ^ name )
+    files = ( ^ files )
+    parent = ( ^ parent )
+    size = ( ^ size )
+
+    name: newName = ( name := newName )
+    files: newFiles = ( files := newFiles )
+    parent: newParent = ( parent := newParent )
+
+    addFile: file = ( files append: file )
+
+    size = (
+        | total |
+        total := 0.
+        files do: [ :item | total := total + item size ].
+        ^ total.
+    )
+
+    collectInto: container = (
+        container push: (RevRankedValue new: self score: self size).
+        files do: [ :it | it collectInto: container ].
+    )
+
+    print: level = (
+        | output |
+
+        output := ''.
+        level timesRepeat: [ output := output + ' ' ].
+        output := output + '- '.
+        output := output + name.
+        output := output + ' (dir)'.
+        output println.
+
+        files do: [ :it | it print: level + 1 ].
+    )
+
+    ------------
+
+    new: name = (
+        ^ (self new name: name) files: Vector new.
+    )
+)

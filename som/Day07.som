@@ -1,0 +1,129 @@
+
+Day07 = (
+    | input |
+
+    setup = (
+        | result command current |
+
+        input := system loadFile: 'inputs/day07.txt'.
+        input ifNil: [ self error: 'could not open input file' ].
+
+        input := input split: '\n'.
+        input := input reject: [ :it | it length = 0 ].
+        input := input asArray.
+
+        result := Vector new.
+
+        input do: [ :line |
+            (line beginsWith: '$') ifTrue: [
+                command ifNotNil: [
+                    result append: (Array with: command with: current asArray).
+                ].
+
+                command := line substringFrom: 3 to: line length.
+                current := Vector new.
+            ] ifFalse: [
+                current append: line.
+            ].
+        ].
+
+        command ifNotNil: [
+            result append: (Array with: command with: current asArray).
+        ].
+
+        input := result.
+    )
+
+    constructTree: input = (
+        | root cwd |
+
+        root := Day07Dir new: '/'.
+        cwd := root.
+
+        input do: [ :it |
+            | cmd output |
+
+            cmd := it at: 1.
+            output := it at: 2.
+
+            cmd := cmd split: ' '.
+
+            (cmd at: 1) = 'cd' ifTrue: [
+                (cmd at: 2) = '/' ifTrue: [ cwd := root ] ifFalse: [
+                    (cmd at: 2) = '..' ifTrue: [ cwd := cwd parent ] ifFalse: [
+                        cwd := ArrayUtils find: [ :node | node name = (cmd at: 2) ] in: cwd files.
+                    ].
+                ].
+            ].
+
+            (cmd at: 1) = 'ls' ifTrue: [
+                output do: [ :line |
+                    line := line split: ' '.
+                    (line at: 1) = 'dir' ifTrue: [
+                        | dir |
+                        dir := Day07Dir new: (line at: 2).
+                        dir parent: cwd.
+                        cwd addFile: dir.
+                    ] ifFalse: [
+                        | file |
+                        file := Day07File new: (line at: 2) size: (line at: 1) asInteger.
+                        cwd addFile: file.
+                    ].
+                ]
+            ].
+        ].
+
+        ^ root.
+    )
+
+    part1 = (
+        | answer root heap |
+
+        root := self constructTree: input.
+
+        heap := BinaryHeap new.
+        root collectInto: heap.
+
+        answer := 0.
+        [ heap isNil ] whileFalse: [
+            | item |
+            item := heap pop value.
+            item class = Day07Dir ifTrue: [
+                item := item size.
+                item <= 100000
+                    ifTrue: [ answer := answer + item ]
+                    ifFalse: [ heap := nil ].
+            ].
+        ].
+
+        'part1: ' print. answer println.
+    )
+
+    part2 = (
+        | answer root heap target |
+
+        root := self constructTree: input.
+
+        heap := BinaryHeap new.
+        root collectInto: heap.
+
+        target := root size - 40000000.
+
+        [ answer isNil ] whileTrue: [
+            | item |
+            item := heap pop value.
+            item class = Day07Dir ifTrue: [
+                item := item size.
+                item >= target ifTrue: [ answer := item ].
+            ].
+        ].
+
+        'part2: ' print. answer println.
+    )
+
+    run: args = (
+        self setup.
+        Timing measure: [ self part1 ].
+        Timing measure: [ self part2 ].
+    )
+)
