@@ -1,0 +1,201 @@
+
+Day08 = (
+    | input width height |
+
+    setup = (
+        input := system loadFile: 'inputs/day08.txt'.
+        input ifNil: [ self error: 'could not open input file' ].
+
+        input := input split: '\n'.
+        input := input reject: [ :it | it length = 0 ].
+        input := input asArray.
+
+        input := input collect: [ :line |
+            | array |
+
+            array := Array new: line length.
+            1 to: line length do: [ :idx |
+                array at: idx put: (line charAt: idx) asInteger.
+            ].
+
+            array.
+        ].
+
+        width := (input at: 1) length.
+        height := input length.
+    )
+
+    part1 = (
+        | set answer |
+
+        set := MyHashSet new.
+
+        1 to: height do: [ :y |
+            | line max idx |
+
+            line := input at: y.
+
+            max := -1.
+            idx := 0.
+
+            [ idx isNil not and: [ idx < width ] ] whileTrue: [
+                | value point |
+
+                idx := idx + 1.
+                value := line at: idx.
+
+                point := Vector2 x: idx y: y.
+
+                value > max ifTrue: [
+                    max := value.
+                    set insert: point.
+                ].
+            ].
+
+            max := -1.
+            idx := width + 1.
+
+            [ idx isNil not and: [ idx > 1 ] ] whileTrue: [
+                | value point |
+
+                idx := idx - 1.
+                value := line at: idx.
+
+                point := Vector2 x: idx y: y.
+
+                value > max ifTrue: [
+                    max := value.
+                    set insert: point.
+                ].
+            ].
+        ].
+
+        1 to: width do: [ :x |
+            | max idx |
+
+            max := -1.
+            idx := 0.
+
+            [ idx isNil not and: [ idx < height ] ] whileTrue: [
+                | value point |
+
+                idx := idx + 1.
+                value := (input at: idx) at: x.
+
+                point := Vector2 x: x y: idx.
+
+                value > max ifTrue: [
+                    set insert: point.
+                    max := value.
+                ].
+            ].
+
+            max := -1.
+            idx := height + 1.
+
+            [ idx isNil not and: [ idx > 1 ] ] whileTrue: [
+                | value point |
+
+                idx := idx - 1.
+                value := (input at: idx) at: x.
+
+                point := Vector2 x: x y: idx.
+
+                value > max ifTrue: [
+                    set insert: point.
+                    max := value.
+                ].
+            ].
+        ].
+
+        answer := set size.
+
+        'part1: ' print. answer println.
+    )
+
+    part2 = (
+        | heap answer |
+
+        answer := 0.
+
+        1 to: height do: [ :y |
+            1 to: width do: [ :x |
+                | point score max idx count |
+
+                score := 1.
+                point := Vector2 x: x y: y.
+
+                max := (input at: y) at: x.
+                idx := x.
+                count := 0.
+
+                [ idx isNil not and: [ idx < width ] ] whileTrue: [
+                    | value |
+
+                    idx := idx + 1.
+                    value := (input at: y) at: idx.
+                    count := count + 1.
+
+                    value >= max ifTrue: [ idx := nil ].
+                ].
+
+                score := score * count.
+
+                idx := x.
+                count := 0.
+
+                [ idx isNil not and: [ idx > 1 ] ] whileTrue: [
+                    | value |
+
+                    idx := idx - 1.
+                    value := (input at: y) at: idx.
+                    count := count + 1.
+
+                    value >= max ifTrue: [ idx := nil ].
+                ].
+
+                score := score * count.
+
+                idx := y.
+                count := 0.
+
+                [ idx isNil not and: [ idx < height ] ] whileTrue: [
+                    | value |
+
+                    idx := idx + 1.
+                    value := (input at: idx) at: x.
+                    count := count + 1.
+
+                    value >= max ifTrue: [ idx := nil ].
+                ].
+
+                score := score * count.
+
+                idx := y.
+                count := 0.
+
+                [ idx isNil not and: [ idx > 1 ] ] whileTrue: [
+                    | value |
+
+                    idx := idx - 1.
+                    value := (input at: idx) at: x.
+                    count := count + 1.
+
+                    value >= max ifTrue: [ idx := nil ].
+                ].
+
+                score := score * count.
+
+                answer := answer max: score.
+            ].
+        ].
+
+        'part2: ' print. answer println.
+    )
+
+    run: args = (
+        self setup.
+        Timing measure: [ self part1 ].
+        Timing measure: [ self part2 ].
+    )
+)
