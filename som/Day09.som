@@ -1,0 +1,147 @@
+
+Day09 = (
+    | input directions |
+
+    setup = (
+        input := system loadFile: 'inputs/day09.txt'.
+        input ifNil: [ self error: 'could not open input file' ].
+
+        input := input split: '\n'.
+        input := input reject: [ :it | it length = 0 ].
+        input := input asArray.
+
+        input := input collect: [ :line |
+            line := line split: ' '.
+            line at: 1 put: (line at: 1) asSymbol.
+            line at: 2 put: (line at: 2) asInteger.
+            line
+        ].
+
+        directions := MyHashMap new.
+        directions at: #U put: (Vector2 x:  0 y: -1).
+        directions at: #R put: (Vector2 x:  1 y:  0).
+        directions at: #D put: (Vector2 x:  0 y:  1).
+        directions at: #L put: (Vector2 x: -1 y:  0).
+    )
+
+    printMap: rope between: min and: max = (
+        min y to: max y do: [ :y |
+            min x to: max x do: [ :x |
+                | point value |
+
+                point := Vector2 x: x y: y.
+                value := '.'.
+
+                rope length downTo: 2 do: [ :idx |
+                    (rope at: idx) = point ifTrue: [
+                        value := (idx - 1) asString.
+                    ].
+                ].
+
+                (rope at: 1) = point ifTrue: [
+                    value := 'H'.
+                ].
+
+                value print.
+            ].
+            '' println.
+        ]
+    )
+
+    part1 = (
+        | head tail set answer |
+
+        set := MyHashSet new.
+
+        head := Vector2 x: 0 y: 0.
+        tail := Vector2 x: 0 y: 0.
+
+        set insert: tail.
+
+        input do: [ :move |
+            | dir amt |
+
+            dir := move at: 1.
+            amt := move at: 2.
+
+            dir := directions at: dir.
+
+            amt timesRepeat: [
+                | diff |
+
+                head := head + dir.
+                diff := head - tail.
+
+                (diff x abs > 1 or: diff y abs > 1) ifTrue: [
+                    tail := tail + diff - dir.
+                    set insert: tail.
+                ].
+            ].
+        ].
+
+        answer := set size.
+
+        'part1: 'print. answer println.
+    )
+
+    part2 = (
+        | rope set answer |
+
+        set := MyHashSet new.
+
+        rope := Array new: 10 withAll: [ Vector2 x: 0 y: 0 ].
+
+        set insert: (Vector2 x: 0 y: 0).
+
+        input do: [ :move |
+            | dir amt |
+
+            dir := move at: 1.
+            amt := move at: 2.
+
+            dir := directions at: dir.
+
+            amt timesRepeat: [
+                rope at: 1 put: (rope at: 1) + dir.
+
+                1 to: 9 do: [ :idx |
+                    | head tail diff |
+
+                    head := rope at: idx.
+                    tail := rope at: idx + 1.
+
+                    diff := head - tail.
+
+                    (diff x abs > 1 or: diff y abs > 1) ifTrue: [
+                        | off |
+
+                        off := Vector2 x: 0 y: 0.
+
+                        diff x abs > 1 ifTrue: [
+                            off x: diff x / diff x abs.
+                        ].
+                        diff y abs > 1 ifTrue: [
+                            off y: diff y / diff y abs.
+                        ].
+
+                        tail := tail + diff - off.
+                    ].
+
+                    rope at: idx + 1 put: tail.
+                ].
+
+                set insert: (rope at: 10).
+            ].
+        ].
+
+        answer := set size.
+
+        'part2: 'print. answer println.
+    )
+
+    run: args = (
+        self setup.
+        Timing measure: [ self part1 ].
+        Timing measure: [ self part2 ].
+    )
+)

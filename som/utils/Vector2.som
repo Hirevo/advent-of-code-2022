@@ -24,21 +24,56 @@ Vector2 = (
             y: y - other y
     )
 
+    scalarAdd: scalar = (
+        ^ self class
+            x: x + scalar
+            y: y + scalar
+    )
+
+    scalarSub: scalar = (
+        ^ self class
+            x: x - scalar
+            y: y - scalar
+    )
+
+    scalarMult: scalar = (
+        ^ self class
+            x: x * scalar
+            y: y * scalar
+    )
+
+    scalarDiv: scalar = (
+        ^ self class
+            x: x / scalar
+            y: y / scalar
+    )
+
+    length = (
+        ^ ((x * x) + (y * y)) sqrt.
+    )
+
+    normalize = (
+        ^ self scalarDiv: self length.
+    )
+
     hashcode = (
-        ^ 524287 * x hashcode + y hashcode
+        ^ 524287 * x hashcode + y hashcode.
     )
 
     clone = (
         ^ self class x: x y: y.
     )
 
+    asString = (
+        ^ '(' + x + ', ' + y + ')'.
+    )
+
     print = (
-        ('(' + x + ',' + y + ')') print.
+        self asString print.
     )
 
     println = (
-        self print.
-        '' println.
+        self asString println.
     )
 
     -----------
