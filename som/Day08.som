@@ -38,7 +38,7 @@ Day08 = (
             max := -1.
             idx := 0.
 
-            [ idx isNil not and: [ idx < width ] ] whileTrue: [
+            [ idx notNil and: [ idx < width ] ] whileTrue: [
                 | value point |
 
                 idx := idx + 1.
@@ -55,7 +55,7 @@ Day08 = (
             max := -1.
             idx := width + 1.
 
-            [ idx isNil not and: [ idx > 1 ] ] whileTrue: [
+            [ idx notNil and: [ idx > 1 ] ] whileTrue: [
                 | value point |
 
                 idx := idx - 1.
@@ -76,7 +76,7 @@ Day08 = (
             max := -1.
             idx := 0.
 
-            [ idx isNil not and: [ idx < height ] ] whileTrue: [
+            [ idx notNil and: [ idx < height ] ] whileTrue: [
                 | value point |
 
                 idx := idx + 1.
@@ -93,7 +93,7 @@ Day08 = (
             max := -1.
             idx := height + 1.
 
-            [ idx isNil not and: [ idx > 1 ] ] whileTrue: [
+            [ idx notNil and: [ idx > 1 ] ] whileTrue: [
                 | value point |
 
                 idx := idx - 1.
@@ -129,7 +129,7 @@ Day08 = (
                 idx := x.
                 count := 0.
 
-                [ idx isNil not and: [ idx < width ] ] whileTrue: [
+                [ idx notNil and: [ idx < width ] ] whileTrue: [
                     | value |
 
                     idx := idx + 1.
@@ -144,7 +144,7 @@ Day08 = (
                 idx := x.
                 count := 0.
 
-                [ idx isNil not and: [ idx > 1 ] ] whileTrue: [
+                [ idx notNil and: [ idx > 1 ] ] whileTrue: [
                     | value |
 
                     idx := idx - 1.
@@ -159,7 +159,7 @@ Day08 = (
                 idx := y.
                 count := 0.
 
-                [ idx isNil not and: [ idx < height ] ] whileTrue: [
+                [ idx notNil and: [ idx < height ] ] whileTrue: [
                     | value |
 
                     idx := idx + 1.
@@ -174,7 +174,7 @@ Day08 = (
                 idx := y.
                 count := 0.
 
-                [ idx isNil not and: [ idx > 1 ] ] whileTrue: [
+                [ idx notNil and: [ idx > 1 ] ] whileTrue: [
                     | value |
 
                     idx := idx - 1.

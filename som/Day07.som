@@ -85,7 +85,7 @@ Day07 = (
         root collectInto: heap.
 
         answer := 0.
-        [ heap isNil ] whileFalse: [
+        [ heap notNil ] whileTrue: [
             | item |
             item := heap pop value.
             item class = Day07Dir ifTrue: [
