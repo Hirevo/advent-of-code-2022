@@ -1,0 +1,59 @@
+
+Day10CPU = (
+    | x pc input cycle target callback |
+
+    x = ( ^ x )
+    pc = ( ^ pc )
+    input = ( ^ input )
+    cycle = ( ^ cycle )
+
+    x: newX = ( x := newX )
+    pc: newPc = ( pc := newPc )
+    input: newInput = ( input := newInput )
+    cycle: newCycle = ( cycle := newCycle )
+
+    step = (
+        cycle := cycle + 1.
+
+        target ifNotNil: [
+            target = cycle ifTrue: [
+                callback value.
+                target := nil.
+                callback := nil.
+            ].
+        ].
+
+        target ifNil: [
+            | cmd instr |
+
+            pc := pc + 1.
+            pc > input length ifTrue: [ ^ false ].
+
+            cmd := input at: pc.
+            instr := cmd at: 1.
+
+            instr = #addx ifTrue: [
+                | value |
+
+                value := (cmd at: 2) asInteger.
+
+                target := cycle + 2.
+                callback := [ self x: self x + value ].
+            ].
+        ].
+
+        ^ true.
+    )
+
+    --------------
+
+    new: input = (
+        | cpu |
+        cpu := super new.
+        cpu x: 1.
+        cpu pc: 0.
+        cpu input: input.
+        cpu cycle: 0.
+        ^ cpu.
+    )
+)

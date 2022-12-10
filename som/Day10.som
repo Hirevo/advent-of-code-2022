@@ -1,0 +1,64 @@
+
+Day10 = (
+    | input |
+
+    setup = (
+        input := system loadFile: 'inputs/day10.txt'.
+        input ifNil: [ self error: 'could not open input file' ].
+
+        input := input split: '\n'.
+        input := input reject: [ :it | it length = 0 ].
+        input := input asArray.
+
+        input := input collect: [ :line |
+            line := line split: ' '.
+            line at: 1 put: (line at: 1) asSymbol.
+            line.
+        ].
+    )
+
+    part1 = (
+        | cpu answer |
+
+        cpu := Day10CPU new: input.
+        answer := 0.
+
+        [ cpu step ] whileTrue: [
+            cpu cycle - 20 % 40 == 0 ifTrue: [
+                answer := cpu cycle * cpu x + answer.
+            ].
+        ].
+
+        'part1: ' print. answer println.
+    )
+
+    part2 = (
+        | cpu answer |
+
+        cpu := Day10CPU new: input.
+        answer := Array new: 6 * 40 withAll: ' '.
+
+        [ cpu step ] whileTrue: [
+            | x y |
+
+            x := cpu cycle - 1 % 40.
+            y := cpu cycle - 1 / 40.
+
+            (cpu x - x) abs < 2 ifTrue: [
+                answer at: y * 40 + x + 1 put: '#'.
+            ].
+        ].
+
+        'part2:' println.
+        0 to: 5 do: [ :y |
+            0 to: 39 do: [ :x | (answer at: y * 40 + x + 1) print ].
+            '' println.
+        ].
+    )
+
+    run: args = (
+        self setup.
+        Timing measure: [ self part1 ].
+        Timing measure: [ self part2 ].
+    )
+)
