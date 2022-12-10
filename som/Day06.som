@@ -45,7 +45,7 @@ Day06 = (
 
         answer := self findMarker: 14.
 
-        'part1: ' print. answer println.
+        'part2: ' print. answer println.
     )
 
     run: args = (
