@@ -1,0 +1,56 @@
+
+Day11 = (
+    | input |
+
+    setup = (
+        input := system loadFile: 'inputs/day11.txt'.
+        input ifNil: [ self error: 'could not open input file' ].
+
+        input := input split: '\n\n'.
+        input := input reject: [ :it | it length = 0 ].
+        input := input asArray.
+
+        input := input collect: [ :section | Day11Monkey parse: section ].
+    )
+
+    part1 = (
+        | monkeys heap answer |
+
+        monkeys := input collect: [ :monkey | monkey clone ].
+
+        20 timesRepeat: [
+            monkeys do: [ :monkey | monkey processRound: monkeys ].
+        ].
+
+        heap := BinaryHeap new.
+        monkeys do: [ :monkey | heap push: monkey count ].
+
+        answer := heap pop * heap pop.
+
+        'part1: ' print. answer println.
+    )
+
+    part2 = (
+        | monkeys divisor heap answer |
+
+        monkeys := input collect: [ :monkey | monkey clone ].
+        divisor := monkeys inject: 1 into: [ :acc :monkey | acc * monkey divisor ].
+
+        10000 timesRepeat: [
+            monkeys do: [ :monkey | monkey processRound: monkeys modulo: divisor ].
+        ].
+
+        heap := BinaryHeap new.
+        monkeys do: [ :monkey | heap push: monkey count ].
+
+        answer := heap pop * heap pop.
+
+        'part2: ' print. answer println.
+    )
+
+    run: args = (
+        self setup.
+        Timing measure: [ self part1 ].
+        Timing measure: [ self part2 ].
+    )
+)

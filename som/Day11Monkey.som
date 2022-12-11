@@ -1,0 +1,137 @@
+
+Day11Monkey = (
+    | id items expr divisor success failure count |
+
+    id = ( ^ id )
+    items = ( ^ items )
+    expr = ( ^ expr )
+    divisor = ( ^ divisor )
+    success = ( ^ success )
+    failure = ( ^ failure )
+    count = ( ^ count )
+
+    id: newId = ( id := newId )
+    items: newItems = ( items := newItems )
+    expr: newExpr = ( expr := newExpr )
+    divisor: newDivisor = ( divisor := newDivisor )
+    success: newSuccess = ( success := newSuccess )
+    failure: newFailure = ( failure := newFailure )
+    count: newCount = ( count := newCount )
+
+    " implements part 1 "
+    processRound: monkeys = (
+        count := count + items length.
+        items size timesRepeat: [
+            | item lhs op rhs |
+
+            item := items removeFirst.
+
+            lhs := expr at: 1.
+            op := expr at: 2.
+            rhs := expr at: 3.
+
+            lhs == #old ifTrue: [ lhs := item ].
+            rhs == #old ifTrue: [ rhs := item ].
+
+            op == #+ ifTrue: [ item := lhs + rhs ].
+            op == #- ifTrue: [ item := lhs - rhs ].
+            op == #* ifTrue: [ item := lhs * rhs ].
+            op == #/ ifTrue: [ item := lhs / rhs ].
+
+            item := item / 3.
+
+            item % divisor == 0 ifTrue: [
+                (monkeys at: success) items append: item.
+            ] ifFalse: [
+                (monkeys at: failure) items append: item.
+            ].
+        ].
+    )
+
+    " implements part 2 "
+    processRound: monkeys modulo: globalDivisor = (
+        count := count + items length.
+        items size timesRepeat: [
+            | item lhs op rhs |
+
+            item := items removeFirst.
+
+            lhs := expr at: 1.
+            op := expr at: 2.
+            rhs := expr at: 3.
+
+            lhs == #old ifTrue: [ lhs := item ].
+            rhs == #old ifTrue: [ rhs := item ].
+
+            op == #+ ifTrue: [ item := lhs + rhs ].
+            op == #- ifTrue: [ item := lhs - rhs ].
+            op == #* ifTrue: [ item := lhs * rhs ].
+            op == #/ ifTrue: [ item := lhs / rhs ].
+
+            item := item % globalDivisor.
+
+            item % divisor == 0 ifTrue: [
+                (monkeys at: success) items append: item.
+            ] ifFalse: [
+                (monkeys at: failure) items append: item.
+            ].
+        ].
+    )
+
+    clone = (
+        | monkey |
+
+        monkey := Day11Monkey new.
+        monkey id: id.
+        monkey items: (Vector new: items size).
+        monkey items appendAll: items.
+        monkey expr: expr.
+        monkey divisor: divisor.
+        monkey success: success.
+        monkey failure: failure.
+        monkey count: count.
+
+        ^ monkey.
+    )
+
+    ---------------
+
+    parse: section = (
+        | monkey line |
+
+        monkey := self new.
+        section := section split: '\n'.
+
+        line := section at: 1.
+        monkey id: (line substringFrom: 'Monkey ' length + 1 to: line length - 1) asInteger.
+
+        line := section at: 2.
+        line := line substringFrom: '  Starting items: ' length + 1 to: line length.
+        line := line split: ', '.
+        line := line collect: [ :it | it asInteger ].
+        line := (Vector new: line length) appendAll: line.
+        monkey items: line.
+
+        line := section at: 3.
+        line := line substringFrom: '  Operation: new = ' length + 1 to: line length.
+        line := line split: ' '.
+        monkey expr: (line collect: [ :it |
+            it isDigits
+                ifTrue: [ it asInteger ]
+                ifFalse: [ it asSymbol ]
+        ]).
+
+        line := section at: 4.
+        monkey divisor: (line substringFrom: '  Test: divisible by ' length + 1 to: line length) asInteger.
+
+        line := section at: 5.
+        monkey success: (line substringFrom: '    If true: throw to monkey ' length + 1 to: line length) asInteger + 1.
+
+        line := section at: 6.
+        monkey failure: (line substringFrom: '    If false: throw to monkey ' length + 1 to: line length) asInteger + 1.
+
+        monkey count: 0.
+
+        ^ monkey.
+    )
+)
