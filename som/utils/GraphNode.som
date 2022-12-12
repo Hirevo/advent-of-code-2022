@@ -1,0 +1,26 @@
+
+GraphNode = (
+    | item neighbors |
+
+    item = ( ^ item )
+    neighbors = ( ^ neighbors asArray )
+
+    item: newItem = ( item := newItem )
+    neighbors: newNeighbors = ( neighbors := newNeighbors )
+
+    hashcode = ( ^ item hashcode )
+
+    addNeighbor: neighbor = (
+        neighbors append: neighbor.
+    )
+
+    -------
+
+    new: item = (
+        | value |
+        value := super new.
+        value item: item.
+        value neighbors: Vector new.
+        ^ value.
+    )
+)

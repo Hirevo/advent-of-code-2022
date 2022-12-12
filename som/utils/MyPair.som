@@ -1,0 +1,45 @@
+
+" a more featureful Pair implementation than `Pair` "
+MyPair = (
+    | fst snd |
+
+    fst = ( ^ fst )
+    snd = ( ^ snd )
+
+    fst: newFst = ( fst := newFst )
+    snd: newSnd = ( snd := newSnd )
+
+    = other = (
+        ^ fst = other fst and: [ snd = other snd ].
+    )
+
+    hashcode = (
+        ^ 524287 * fst hashcode + snd hashcode.
+    )
+
+    clone = (
+        ^ self class fst: fst snd: snd.
+    )
+
+    asString = (
+        ^ '(' + fst + ', ' + snd + ')'.
+    )
+
+    print = (
+        self asString print.
+    )
+
+    println = (
+        self asString println.
+    )
+
+    -----------
+
+    fst: fst snd: snd = (
+        | pair |
+        pair := self new.
+        pair fst: fst.
+        pair snd: snd.
+        ^ pair.
+    )
+)

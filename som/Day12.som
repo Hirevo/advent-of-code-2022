@@ -1,0 +1,160 @@
+
+Day12 = (
+    | input width height start end |
+
+    setup = (
+        | alphabet |
+
+        input := system loadFile: 'inputs/day12.txt'.
+        input ifNil: [ self error: 'could not open input file' ].
+
+        input := input split: '\n'.
+        input := input reject: [ :it | it length = 0 ].
+        input := input asArray.
+
+        " Similarly to Day03, we don't have a way to do any arithmetic on character codes in SOM, "
+        " so here we go again with a manually generated array in alphabetical order "
+        alphabet := #(#a #b #c #d #e #f #g #h #i #j #k #l #m #n #o #p #q #r #s #t #u #v #w #x #y #z).
+
+        height := input length.
+
+        1 to: height do: [ :y |
+            | row |
+
+            width := (input at: y) length.
+            row := Array new: width.
+
+            1 to: width do: [ :x |
+                | ch point value |
+
+                ch := (input at: y) charAt: x.
+                point := Vector2 x: x y: y.
+
+                ch := ch asSymbol.
+
+                ch = #S ifTrue: [ start := point. ch := #a ].
+                ch = #E ifTrue: [ end := point. ch := #z ].
+
+                value := ArrayUtils findIndex: [ :it | it = ch ] in: alphabet.
+                value := MyPair fst: point snd: value.
+
+                row at: x put: value.
+            ].
+
+            input at: y put: row.
+        ].
+    )
+
+    part1 = (
+        | graph source goal answer |
+
+        graph := Array new: height withAll: [ Array new: width ].
+
+        1 to: height do: [ :y |
+            1 to: width do: [ :x |
+                | node |
+                node := (input at: y) at: x.
+                node := GraphNode new: node.
+                (graph at: y) at: x put: node.
+            ].
+        ].
+
+        1 to: height do: [ :y |
+            1 to: width do: [ :x |
+                | node |
+                node := (graph at: y) at: x.
+
+                x > 1 ifTrue: [ | other |
+                    other := (graph at: y) at: x - 1.
+                    other item snd - node item snd < 2 ifTrue: [ node addNeighbor: other ].
+                ].
+
+                y > 1 ifTrue: [ | other |
+                    other := (graph at: y - 1) at: x.
+                    other item snd - node item snd < 2 ifTrue: [ node addNeighbor: other ].
+                ].
+
+                x < width ifTrue: [ | other |
+                    other := (graph at: y) at: x + 1.
+                    other item snd - node item snd < 2 ifTrue: [ node addNeighbor: other ].
+                ].
+
+                y < height ifTrue: [ | other |
+                    other := (graph at: y + 1) at: x.
+                    other item snd - node item snd < 2 ifTrue: [ node addNeighbor: other ].
+                ].
+            ].
+        ].
+
+        source := (graph at: start y) at: start x.
+        goal := (graph at: end y) at: end x.
+
+        answer := PathFinder
+            breadthFirst: source
+            through: [ :node | node neighbors ]
+            towards: [ :node | node item fst == end ].
+
+        answer := answer length - 1.
+
+        'part1: ' print. answer println.
+    )
+
+    part2 = (
+        | graph source answer |
+
+        graph := Array new: height withAll: [ Array new: width ].
+
+        1 to: height do: [ :y |
+            1 to: width do: [ :x |
+                | node |
+                node := (input at: y) at: x.
+                node := GraphNode new: node.
+                (graph at: y) at: x put: node.
+            ].
+        ].
+
+        1 to: height do: [ :y |
+            1 to: width do: [ :x |
+                | node |
+                node := (graph at: y) at: x.
+
+                x > 1 ifTrue: [ | other |
+                    other := (graph at: y) at: x - 1.
+                    node item snd - other item snd < 2 ifTrue: [ node addNeighbor: other ].
+                ].
+
+                x < width ifTrue: [ | other |
+                    other := (graph at: y) at: x + 1.
+                    node item snd - other item snd < 2 ifTrue: [ node addNeighbor: other ].
+                ].
+
+                y > 1 ifTrue: [ | other |
+                    other := (graph at: y - 1) at: x.
+                    node item snd - other item snd < 2 ifTrue: [ node addNeighbor: other ].
+                ].
+
+                y < height ifTrue: [ | other |
+                    other := (graph at: y + 1) at: x.
+                    node item snd - other item snd < 2 ifTrue: [ node addNeighbor: other ].
+                ].
+            ].
+        ].
+
+        source := (graph at: end y) at: end x.
+
+        answer := PathFinder
+            breadthFirst: source
+            through: [ :node | node neighbors ]
+            towards: [ :node | node item snd == 1 ].
+
+        answer := answer length - 1.
+
+        'part2: ' print. answer println.
+    )
+
+    run: args = (
+        self setup.
+        Timing measure: [ self part1 ].
+        Timing measure: [ self part2 ].
+    )
+)
