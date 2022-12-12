@@ -151,7 +151,7 @@ fn part2(input: &InputType) -> Result<(), Error> {
         .take(2)
         .fold(1, |acc, count| acc * count);
 
-    println!("part1: {answer}");
+    println!("part2: {answer}");
     Ok(())
 }
 
