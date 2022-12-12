@@ -20,7 +20,7 @@ Day11Monkey = (
 
     " implements part 1 "
     processRound: monkeys = (
-        count := count + items length.
+        count := count + items size.
         items size timesRepeat: [
             | item lhs op rhs |
 
@@ -50,7 +50,7 @@ Day11Monkey = (
 
     " implements part 2 "
     processRound: monkeys modulo: globalDivisor = (
-        count := count + items length.
+        count := count + items size.
         items size timesRepeat: [
             | item lhs op rhs |
 
