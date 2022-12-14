@@ -164,17 +164,20 @@ where
 }
 
 fn value() -> impl Parser<char, Value, Error = Simple<char>> {
-    just("old")
-        .map(|_| Value::Old)
-        .or(integer::<u64>().map(Value::Const))
+    choice((
+        just("old").to(Value::Old),
+        integer::<u64>().map(Value::Const),
+    ))
 }
 
 fn operator() -> impl Parser<char, fn(Value, Value) -> Expression, Error = Simple<char>> {
-    (just("+").map(|_| Expression::Add as fn(Value, Value) -> Expression))
-        .or(just("-").map(|_| Expression::Sub as fn(Value, Value) -> Expression))
-        .or(just("*").map(|_| Expression::Mul as fn(Value, Value) -> Expression))
-        .or(just("/").map(|_| Expression::Div as fn(Value, Value) -> Expression))
-        .or(just("%").map(|_| Expression::Mod as fn(Value, Value) -> Expression))
+    choice((
+        just("+").to(Expression::Add as fn(Value, Value) -> Expression),
+        just("-").to(Expression::Sub as fn(Value, Value) -> Expression),
+        just("*").to(Expression::Mul as fn(Value, Value) -> Expression),
+        just("/").to(Expression::Div as fn(Value, Value) -> Expression),
+        just("%").to(Expression::Mod as fn(Value, Value) -> Expression),
+    ))
 }
 
 // not my proudest parser, but it was quick enough to put together
