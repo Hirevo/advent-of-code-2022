@@ -9,8 +9,8 @@ use std::ops::{
 pub struct Vector<T, const N: usize>([T; N]);
 
 impl<T, const N: usize> Vector<T, N> {
-    pub fn new(data: [T; N]) -> Self {
-        Self::from(data)
+    pub const fn new(data: [T; N]) -> Self {
+        Self(data)
     }
 }
 
@@ -321,7 +321,7 @@ where
 
 impl<T, const N: usize> From<[T; N]> for Vector<T, N> {
     fn from(data: [T; N]) -> Self {
-        Self(data)
+        Self::new(data)
     }
 }
 
