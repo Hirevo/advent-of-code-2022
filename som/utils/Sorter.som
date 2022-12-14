@@ -4,13 +4,17 @@ Sorter = (
     ---------
 
     bubblesort: data = (
+        self bubblesort: data with: [ :a :b | a - b ].
+    )
+
+    bubblesort: data with: sorterBlk = (
         | sorted len |
         len := data length.
         sorted := false.
         [ sorted ] whileFalse: [
             sorted := true.
             2 to: len do: [ :idx |
-                (data at: idx - 1) > (data at: idx) ifTrue: [
+                (sorterBlk value: (data at: idx - 1) with: (data at: idx)) > 0 ifTrue: [
                     | temp |
                     temp := data at: idx - 1.
                     data at: idx - 1 put: (data at: idx).
@@ -23,15 +27,19 @@ Sorter = (
     )
 
     quicksort: data = (
-        self quicksortImpl: data from: 1 to: data length.
+        self quicksortImpl: data with: [ :a :b | a - b ] from: 1 to: data length.
     )
 
-    quicksortImpl: data from: start to: end = (
+    quicksort: data with: sorterBlk = (
+        self quicksortImpl: data with: sorterBlk from: 1 to: data length.
+    )
+
+    quicksortImpl: data with: sorterBlk from: start to: end = (
         | len pivot left right stop temp |
         len := end - start + 1.
         len < 2 ifTrue: [ ^ self ].
         len = 2 ifTrue: [
-            (data at: start) > (data at: end) ifTrue: [
+            (sorterBlk value: (data at: start) with: (data at: end)) > 0 ifTrue: [
                 temp := data at: start.
                 data at: start put: (data at: end).
                 data at: end put: temp.
@@ -45,10 +53,10 @@ Sorter = (
         stop := false.
 
         [ left <= right and: stop not ] whileTrue: [
-            (data at: left) <= pivot ifTrue: [
+            (sorterBlk value: (data at: left) with: pivot) <= 0 ifTrue: [
                 left := left + 1.
             ] ifFalse: [
-                (data at: right) > pivot ifTrue: [
+                (sorterBlk value: (data at: right) with: pivot) > 0 ifTrue: [
                     right = 1 ifTrue: [ stop := true. ] ifFalse: [
                         right := right - 1.
                     ].
@@ -70,7 +78,7 @@ Sorter = (
         data at: start put: (data at: left).
         data at: left put: temp.
 
-        self quicksortImpl: data from: start to: left - 1.
-        self quicksortImpl: data from: left + 1 to: end.
+        self quicksortImpl: data with: sorterBlk from: start to: left - 1.
+        self quicksortImpl: data with: sorterBlk from: left + 1 to: end.
     )
 )

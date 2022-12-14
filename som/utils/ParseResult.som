@@ -1,0 +1,30 @@
+
+ParseResult = (
+    | output error input |
+
+    output = ( ^ output )
+    error = ( ^ error )
+    input = ( ^ input )
+
+    output: newOutput = ( output := newOutput )
+    error: newError = ( error := newError )
+    input: newInput = ( input := newInput )
+
+    --------------
+
+    new: output remaining: input = (
+        | result |
+        result := self new.
+        result output: output.
+        result input: input.
+        ^ result.
+    )
+
+    error: error remaining: input = (
+        | result |
+        result := self new.
+        result error: error.
+        result input: input.
+        ^ result.
+    )
+)

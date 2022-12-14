@@ -1,0 +1,102 @@
+
+Day13 = (
+    | input |
+
+    setup = (
+        | numberParser arrayParser array |
+
+        input := system loadFile: 'inputs/day13.txt'.
+        input ifNil: [ self error: 'could not open input file' ].
+
+        input := input split: '\n\n'.
+        input := input reject: [ :it | it length = 0 ].
+        input := input asArray.
+
+        numberParser := Parser validate: [ :head | head isDigits ].
+        numberParser := Parser map: [ :output |
+            output inject: 0 into: [ :acc :it | acc * 10 + it asInteger ]
+        ] over: (Parser some: numberParser).
+
+        arrayParser := Parser opaque: [ arrayParser ].
+        arrayParser := Parser alternative: numberParser or: arrayParser.
+        arrayParser := Parser separated: arrayParser by: (Parser just: ',').
+        arrayParser := Parser delimited: arrayParser between: (Parser just: '[') and: (Parser just: ']').
+
+        input := input collect: [ :section |
+            section := section split: '\n'.
+            section := section reject: [ :it | it length = 0 ].
+            section := section asArray.
+
+            section collect: [ :line |
+                | result |
+                result := arrayParser value: (MyPair fst: line snd: 1).
+                result error ifNil: [ result output ] ifNotNil: [ self error: result error ].
+            ].
+        ].
+    )
+
+    " sorter function suitable for use within `Sorter` methods "
+    compare: left with: right = (
+        left class = Integer ifTrue: [
+            right class = Integer ifTrue: [
+                left < right ifTrue: [ ^ -1 ].
+                left > right ifTrue: [ ^ 1 ].
+                left == right ifTrue: [ ^ 0 ].
+            ] ifFalse: [
+                ^ self compare: (Array with: left) with: right.
+            ].
+        ] ifFalse: [
+            right class = Integer ifTrue: [
+                ^ self compare: left with: (Array with: right).
+            ] ifFalse: [ | idx |
+                1 to: (left length min: right length) do: [ :idx |
+                    idx := self compare: (left at: idx) with: (right at: idx).
+                    idx == 0 ifFalse: [ ^ idx ].
+                ].
+
+                ^ self compare: left length with: right length.
+            ].
+        ].
+    )
+
+    part1 = (
+        | results answer |
+
+        results := input collect: [ :section | self compare: (section at: 1) with: (section at: 2) ].
+
+        answer := 0.
+        1 to: results length do: [ :idx | (results at: idx) == -1 ifTrue: [ answer := answer + idx ] ].
+
+        'part1: ' print. answer println.
+    )
+
+    part2 = (
+        | flat divider1 divider2 answer |
+
+        flat := Vector new: input length * 2.
+        input do: [ :section | flat appendAll: section ].
+
+        divider1 := #(#(2)).
+        divider2 := #(#(6)).
+
+        flat append: divider1.
+        flat append: divider2.
+
+        flat := flat asArray.
+
+        Sorter quicksort: flat with: [ :a :b | self compare: a with: b ].
+
+        divider1 := ArrayUtils findIndex: [ :it | it == divider1 ] in: flat.
+        divider2 := ArrayUtils findIndex: [ :it | it == divider2 ] in: flat.
+
+        answer := divider1 * divider2.
+
+        'part2: ' print. answer println.
+    )
+
+    run: args = (
+        self setup.
+        Timing measure: [ self part1 ].
+        Timing measure: [ self part2 ].
+    )
+)
