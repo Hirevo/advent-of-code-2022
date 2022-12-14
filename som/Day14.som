@@ -1,0 +1,129 @@
+
+Day14 = (
+    | input min max toConsider |
+
+    setup = (
+        | occupied |
+
+        input := system loadFile: 'inputs/day14.txt'.
+        input ifNil: [ self error: 'could not open input file' ].
+
+        input := input split: '\n'.
+        input := input reject: [ :it | it length = 0 ].
+        input := input asArray.
+
+        occupied := MyHashSet new.
+
+        input do: [ :line |
+            line := line split: ' -> '.
+            line inject: nil into: [ :acc :it |
+                it := it split: ','.
+                it := Vector2 x: (it at: 1) asInteger y: (it at: 2) asInteger.
+                acc ifNil: it ifNotNil: [ | diff |
+                    diff := (it - acc) normalize.
+                    occupied insert: acc clone.
+                    [ acc <> it ] whileTrue: [
+                        acc := acc + diff.
+                        occupied insert: acc clone.
+                    ].
+                    it.
+                ].
+            ].
+        ].
+
+        input := occupied.
+
+        min := input keys inject: nil into: [ :acc :it |
+            acc ifNil: it clone ifNotNil: [
+                (acc clone x: (acc x min: it x)) y: (acc y min: it y)
+            ].
+        ].
+
+        max := input keys inject: nil into: [ :acc :it |
+            acc ifNil: it clone ifNotNil: [
+                (acc clone x: (acc x max: it x)) y: (acc y max: it y)
+            ].
+        ].
+
+        toConsider := Array
+            with: (Vector2 x:  0 y: 1)
+            with: (Vector2 x: -1 y: 1)
+            with: (Vector2 x:  1 y: 1).
+    )
+
+    printMap: sand = (
+        min y to: max y do: [ :y |
+            min x to: max x do: [ :x |
+                | point |
+                point := Vector2 x: x y: y.
+                (input containsKey: point)
+                    ifTrue: [ '#' print ]
+                    ifFalse: [
+                        (sand containsKey: point)
+                            ifTrue: [ 'o' print ]
+                            ifFalse: [ '.' print ]
+                    ].
+            ].
+            '' println.
+        ].
+    )
+
+    placeSand: current in: occupied = (
+        current y > max y ifTrue: [ ^ nil ].
+        toConsider do: [ :dir |
+            dir := current + dir.
+            (occupied containsKey: dir) ifFalse: [ ^ self placeSand: dir in: occupied ].
+        ].
+        ^ current.
+    )
+
+    placeSandFloored: current in: occupied = (
+        toConsider do: [ :dir |
+            dir := current + dir.
+            (occupied containsKey: dir) || (max y + 2 <= dir y) ifFalse: [
+                ^ self placeSandFloored: dir in: occupied.
+            ].
+        ].
+        ^ current.
+    )
+
+    part1 = (
+        | origin occupied answer |
+
+        origin := Vector2 x: 500 y: 0.
+        occupied := input clone.
+
+        [ answer isNil ] whileTrue: [ | result |
+            result := self placeSand: origin clone in: occupied.
+            result ifNil: [
+                answer := occupied size - input size.
+            ] ifNotNil: [
+                occupied insert: result.
+            ].
+        ].
+
+        'part1: ' print. answer println.
+    )
+
+    part2 = (
+        | origin occupied answer |
+
+        origin := Vector2 x: 500 y: 0.
+        occupied := input clone.
+
+        [ occupied containsKey: origin ] whileFalse: [ | result |
+            result := self placeSandFloored: origin clone in: occupied.
+            occupied insert: result.
+        ].
+
+        answer := occupied size - input size.
+
+        'part2: ' print. answer println.
+    )
+
+    run: args = (
+        self setup.
+        Timing measure: [ self part1 ].
+        Timing measure: [ self part2 ].
+    )
+)
