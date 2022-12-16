@@ -208,6 +208,7 @@ MyHashMap = (
                     keep := head next: keep.
                     head := next.
                 ] ifFalse: [
+                    size := size - 1.
                     head := head next.
                 ].
             ].
