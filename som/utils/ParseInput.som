@@ -1,0 +1,40 @@
+
+ParseInput = (
+    | text cursor |
+
+    text = ( ^ text )
+    cursor = ( ^ cursor )
+
+    text: newText = ( text := newText )
+    cursor: newCursor = ( cursor := newCursor )
+
+    inBounds = ( ^ self inBounds: cursor )
+    inBounds: index = ( ^ index between: 0 and: text length + 1 )
+
+    peekLast = (
+        self inBounds ifFalse: [ ^ nil ].
+        ^ text charAt: cursor.
+    )
+
+    peek: count = (
+        count := cursor + count - 1.
+        (self inBounds: count) ifFalse: [ ^ nil ].
+        ^ text substringFrom: cursor to: count.
+    )
+
+    + count = ( ^ self class new: text cursor: cursor + count )
+    - count = ( ^ self class new: text cursor: cursor - count )
+
+    --------------
+
+    new: input = ( ^ self new: input cursor: 1 )
+
+    new: input cursor: cursor = (
+        | result |
+        result := self new.
+        result text: input.
+        result cursor: cursor.
+        ^ result.
+    )
+    
+)

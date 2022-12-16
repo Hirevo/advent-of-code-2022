@@ -4,36 +4,51 @@ Parser = (
 
     anything = (
         ^ [ :input | | head |
-            head := input fst charAt: input snd.
+            head := input peekLast.
             head ifNil: [
                 ParseResult error: 'expected anything, but got EOF' remaining: input
             ] ifNotNil: [
-                ParseResult new: head remaining: (MyPair fst: input fst snd: input snd + 1).
+                ParseResult new: head remaining: input + 1.
             ]
         ]
     )
 
     just: value = (
         ^ [ :input | | head |
-            head := input fst charAt: input snd.
+            head := input peekLast.
             head ifNil: [
                 ParseResult error: 'expected `' + value + '`, but got EOF' remaining: input
             ] ifNotNil: [
                 head = value
-                    ifTrue: [ ParseResult new: head remaining: (MyPair fst: input fst snd: input snd + 1) ]
+                    ifTrue: [ ParseResult new: head remaining: input + 1 ]
                     ifFalse: [ ParseResult error: 'expected `' + value + '`, but got `' + head + '`' remaining: input ]
             ]
         ]
     )
 
+    justAll: values = (
+        ^ [ :input | | head |
+            head := input peek: values length.
+            head ifNil: [
+                ParseResult error: 'expected `' + values + '`, but got `' + input text + '`' remaining: input
+            ] ifNotNil: [
+                head = values ifTrue: [
+                    ParseResult new: head remaining: input + values length
+                ] ifFalse: [
+                    ParseResult error: 'expected `' + values + '`, but got `' + head + '`' remaining: input
+                ].
+            ].
+        ]
+    )    
+
     validate: predicate = (
         ^ [ :input | | head |
-            head := input fst charAt: input snd.
+            head := input peekLast.
             head ifNil: [
                 ParseResult error: 'expected something, but got EOF' remaining: input
             ] ifNotNil: [
                 (predicate value: head)
-                    ifTrue: [ ParseResult new: head remaining: (MyPair fst: input fst snd: input snd + 1) ]
+                    ifTrue: [ ParseResult new: head remaining: input + 1 ]
                     ifFalse: [ ParseResult error: 'failed predicate (validate)' remaining: input ]
             ]
         ]

@@ -29,7 +29,7 @@ Day13 = (
 
             section collect: [ :line |
                 | result |
-                result := arrayParser value: (MyPair fst: line snd: 1).
+                result := arrayParser value: (ParseInput new: line).
                 result error ifNil: [ result output ] ifNotNil: [ self error: result error ].
             ].
         ].
