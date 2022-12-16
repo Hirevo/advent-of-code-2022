@@ -5,6 +5,8 @@ use std::ops::{
     Add, AddAssign, Deref, DerefMut, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign,
 };
 
+use num_traits::Signed;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Vector<T, const N: usize>([T; N]);
 
@@ -125,6 +127,15 @@ where
 {
     pub fn length(&self) -> T {
         self.0.map(|it| it * it).into_iter().sum::<T>()
+    }
+}
+
+impl<T, const N: usize> Vector<T, N>
+where
+    T: Copy + Sum + Sub<Output = T> + Signed,
+{
+    pub fn manhattan_distance(&self, other: Self) -> T {
+        self.0.into_iter().zip(other.0.into_iter()).map(|(a, b)| (b - a).abs()).sum::<T>()
     }
 }
 

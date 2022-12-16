@@ -1,0 +1,156 @@
+
+Day15 = (
+    | input |
+
+    setup = (
+        | numberParser sensorParser beaconParser parser |
+
+        input := system loadFile: 'inputs/day15.txt'.
+        input ifNil: [ self error: 'could not open input file' ].
+
+        input := input split: '\n'.
+        input := input reject: [ :it | it length = 0 ].
+        input := input asArray.
+
+        numberParser := Parser map: [ :output |
+            output inject: 0 into: [ :acc :it | acc * 10 + it asInteger ]
+        ] over: (
+            Parser some: (Parser validate: [ :head | head isDigits ])
+        ).
+
+        numberParser := Parser map: [ :pair |
+            pair fst ifNil: pair snd ifNotNil: [ pair snd negated ]
+        ] over: (
+            Parser sequence: (Parser optional: (Parser just: '-')) and: numberParser
+        ).
+
+        sensorParser := Parser map: [ :pair | Vector2 x: pair fst y: pair snd ] over: (
+            Parser sequence: (
+                Parser sequenceRight: (Parser justAll: 'Sensor at x=') and: numberParser
+            ) and: (
+                Parser sequenceRight: (Parser justAll: ', y=') and: numberParser
+            )
+        ).
+
+        beaconParser := Parser map: [ :pair | Vector2 x: pair fst y: pair snd ] over: (
+            Parser sequence: (
+                Parser sequenceRight: (Parser justAll: ': closest beacon is at x=') and: numberParser
+            ) and: (
+                Parser sequenceRight: (Parser justAll: ', y=') and: numberParser
+            )
+        ).
+
+        parser := Parser sequence: sensorParser and: beaconParser.
+
+        input := input collect: [ :line | | result |
+            result := parser value: (ParseInput new: line).
+            result error
+                ifNil: [ result output ]
+                ifNotNil: [ self error: result error ]
+        ].
+    )
+
+    simplifyIntervals: answer = ( | merged current |
+        Sorter quicksort: answer with: [ :a :b | a lo - b lo ].
+
+        current := answer at: 1.
+        merged := Vector new.
+
+        2 to: answer length do: [ :it |
+            it := answer at: it.
+            (current overlapsWith: it) || [ it lo - current hi == 1 ] ifTrue: [
+                current := current union: it.
+            ] ifFalse: [
+                merged append: current.
+                current := it.
+            ].
+        ].
+
+        current ifNotNil: [ merged append: current ].
+
+        ^ merged asArray.
+    )
+
+    part1 = (
+        | row splitted answer |
+
+        row := 10.
+        answer := Vector new.
+
+        input do: [ :pair | | sensor beacon reach |
+            sensor := pair fst.
+            beacon := pair snd.
+
+            reach := sensor manhattanDistance: beacon.
+            reach := reach - (row - sensor y) abs.
+
+            reach negative ifFalse: [
+                answer append: (Day15Interval lo: sensor x - reach hi: sensor x + reach).
+            ].
+        ].
+
+        answer := self simplifyIntervals: answer asArray.
+
+        splitted := Vector new: answer length.
+
+        answer do: [ :interval | | found |
+            found := input select: [ :pair | pair snd y == row && [ interval contains: pair snd x ] ].
+
+            found size == 0 ifTrue: [
+                splitted append: interval.
+            ] ifFalse: [
+                found do: [ :pair | | parts |
+                    parts := interval splitAt: pair snd x.
+                    parts fst notNil ifTrue: [ splitted append: parts fst ].
+                    parts snd notNil ifTrue: [ splitted append: parts snd ].
+                ].
+            ].
+        ].
+
+        answer := self simplifyIntervals: splitted asArray.
+
+        answer := answer inject: 0 into: [ :acc :it | acc + it length + 1 ].
+
+        'part1: ' print. answer println.
+    )
+
+    part2 = (
+        | size rows answer |
+
+        size := 4000000.
+
+        rows := Array new: size + 1 withAll: [ Vector new ].
+
+        input do: [ :pair | | sensor beacon reach |
+            sensor := pair fst.
+            beacon := pair snd.
+
+            reach := sensor manhattanDistance: beacon.
+
+            0 to: size - 1 do: [ :y | | extent |
+                extent := reach - (y - sensor y) abs.
+                extent negative ifFalse: [
+                    (rows at: y + 1) append: (Day15Interval lo: sensor x - extent hi: sensor x + extent).
+                ].
+            ].
+        ].
+
+        1 to: rows length do: [ :idx |
+            rows at: idx put: (
+                self simplifyIntervals: (rows at: idx) asArray
+            ).
+        ].
+
+        answer := ArrayUtils findIndex: [ :row | row length == 2 ] in: rows.
+
+        answer := ((rows at: answer) at: 1) hi + 1 * 4000000 + (answer - 1).
+
+        'part2: ' print. answer println.
+    )
+    
+    run: args = (
+        self setup.
+        Timing measure: [ self part1 ].
+        Timing measure: [ self part2 ].
+    )
+)

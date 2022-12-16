@@ -56,6 +56,10 @@ Vector2 = (
         ^ self scalarDiv: self length.
     )
 
+    manhattanDistance: other = (
+        ^ (other x - x) abs + (other y - y) abs
+    )
+
     hashcode = (
         ^ 524287 * x hashcode + y hashcode.
     )

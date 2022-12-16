@@ -1,0 +1,100 @@
+
+Day15Interval = (
+    | lo hi |
+
+    lo = ( ^ lo )
+    hi = ( ^ hi )
+
+    lo: newLo = ( lo := newLo )
+    hi: newHi = ( hi := newHi )
+    
+    isEmpty = ( ^ lo > hi )
+    length = ( ^ (hi - lo) max: 0 )
+
+    = other = (
+        ^ lo = other lo and: [ hi = other hi ].
+    )
+
+    contains: value = (
+        ^ (lo <= value) && (value <= hi).
+    )
+
+    overlapsWith: other = (
+        ^ (hi min: other hi) >= (lo max: other lo).
+    )
+
+    intersection: other = (
+        other := self class lo: (lo max: other lo) hi: (hi min: other hi).
+        other isEmpty ifTrue: [ ^ nil ].
+        ^ other.
+    )
+
+    union: other = (
+        ^ self class lo: (lo min: other lo) hi: (hi max: other hi).
+    )
+
+    difference: other = (
+        | pair |
+
+        self isEmpty ifTrue: [ ^ MyPair fst: nil snd: nil ].
+        other isEmpty ifTrue: [ ^ MyPair fst: nil snd: nil ].
+
+        pair := MyPair
+            fst: (self class lo: lo hi: (hi min: other lo - 1))
+            snd: (self class lo: (lo max: other hi + 1) hi: hi).
+
+        pair fst isEmpty ifTrue: [ pair fst: nil ].
+        pair snd isEmpty ifTrue: [ pair snd: nil ].
+
+        pair fst notNil && [ pair fst = pair snd ]
+            ifTrue: [ ^ pair snd: nil ].
+
+        ^ pair.
+    )
+
+    splitAt: value = (
+        ^ self difference: (self class lo: value hi: value).
+    )    
+
+    scalarAdd: scalar = (
+        ^ self class
+            lo: lo + scalar
+            hi: hi + scalar
+    )
+
+    scalarSub: scalar = (
+        ^ self class
+            lo: lo - scalar
+            hi: hi - scalar
+    )    
+
+    hashcode = (
+        ^ 524287 * lo hashcode + hi hashcode.
+    )
+
+    clone = (
+        ^ self class lo: lo hi: hi.
+    )
+
+    asString = (
+        ^ '[' + lo + ', ' + hi + ']'.
+    )
+
+    print = (
+        self asString print.
+    )
+
+    println = (
+        self asString println.
+    )
+
+    -----------
+
+    lo: lo hi: hi = (
+        | interval |
+        interval := self new.
+        interval lo: lo.
+        interval hi: hi.
+        ^ interval.
+    )
+)
